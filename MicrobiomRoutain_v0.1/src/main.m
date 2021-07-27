@@ -383,7 +383,7 @@ if para.test_lefse~=0
                     y4lefse = para4sel.y;
                     para4lefse.tax = simpleName(x_sub.tax(sel4lefse));
                     para4lefse.y_legend = legend_ls{j};
-                    para4lefse.rpath = strcat(cfolder,'/LEfSe/',para.proj,'_',para.test,'_LEfSe');
+                    para4lefse.rpath = strcat(cfolder,'/LEfSe/',para.proj,'_',para.test,'_LEfSe_I',num2str(i));
                     para4lefse.plot = 1;
                     [order,score,Enrich_lefse,tax_lefse,rpath_lefse] = CalLEfSe(x4lefse,y4lefse,para4lefse);
                     if isfield(para,'test_lefse_beta')
