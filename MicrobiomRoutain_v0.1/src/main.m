@@ -34,6 +34,8 @@ Ddir = [WD '/data'];
 Cdir = [WD '/src'];
 
 addpath(genpath(WD));
+mkdir(Rdir);
+mkdir(Ddir );
 cd(Cdir);
 
 % myObj = funContainerMicro;
