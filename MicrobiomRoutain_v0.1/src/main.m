@@ -1,4 +1,4 @@
-function main_Feces_DM_Perio
+function main
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Routain analysis of microbiome study
 % Analysis
@@ -18,16 +18,16 @@ clc;clear;close all;close all hidden
 % PATH = getenv('PATH');
 % setenv('PATH', [PATH ':/Library/Frameworks/R.framework/Resources/bin']);
 
-proj = 'Project_name';
+proj = 'JLT';
 
 %% Parameters for data preprocessing (1:Yes,0:No)
-flag.pre = 1;      % Perform pre-processsing
+flag.pre = 0;      % Perform pre-processsing
 flag.seq_plot = 1; % Summarize the # of reads in each sample
 flag.alpha = 1;    % Calculate alpha diversity
 flag.beta = 1;     % Calculate beta diversity
 
 % Set the working directory
-WD = '/Users/lli59/Documents/MATLAB/Working_directory';
+WD = '/Users/luli/Documents/MATLAB/MicrobiomRoutain_Lou/MicrobiomeAnalysis_Matlab-main_v1/MicrobiomRoutain_v0.1';
 
 Rdir = [WD '/result'];
 Ddir = [WD '/data'];
@@ -40,8 +40,8 @@ cd(Cdir);
 
 % myObj = funContainerMicro;
 %% Initial file name of OTU table and clinical meta data
-OTU_tbl_name = 'OTU_table.txt';
-meta_tbl_name = 'Mapping_file.txt';
+OTU_tbl_name = 'Mothur_16S_table_L7.txt';
+meta_tbl_name = 'Samples details for 16S sequencing DrDiaz-1.txt';
 
 meta_key = 1; % Specify the column in meta file used as the sample ID
 dc = [0.00,0.45,0.74]; % default color (blue)
@@ -173,29 +173,35 @@ else
 end
 
 %% Load labels from the mapping file
-key4Selection_Str = catLabel(meta_ready,2);
-key4Selection_Num = table2array(meta_ready(:,3));
+key_Model = catLabel(meta_ready,2);
+key_Type = catLabel(meta_ready,3);
+key_Treat = catLabel(meta_ready,4);
+
+% key4Selection_Str = catLabel(meta_ready,2);
+% key4Selection_Num = table2array(meta_ready(:,3));
 
 %% Ligature model
 
 % If sel = [], it will use all the samples for comparison
-sel = key4Selection_Str.y==1 & key4Selection_Num~=2;
+sel = key_Model.y==2;
 
 para.Rdir = strcat(Rdir,'/',proj);
 
 para.proj = proj;
-para.test = 'Test_Name'; % Specify the test name
-para.cmp = [2]; % Columns used for comparison
+para.test = 'Lig'; % Specify the test name
+para.cmp = [3 4]; % Columns used for comparison
 
 para.prim = meta_key; % Column in mapping used as the key
 
 % Parameters used for test (1:Yes,0:No)
 
-para.test_top = 1;         % Calculate the Top20 OTUs
-para.test_alpha = 1;       % Alpha diversity comparison
+para.test_top = 0;         % Calculate the Top20 OTUs
+para.test_alpha = 0;       % Alpha diversity comparison
 para.test_beta = 1;        % Beta diversity comparison
-para.test_lefse = 1;       % LEfSe analysis
-para.test_lefse_beta = 1;  % Beta diversity of the OTUs selected by LEfSe analysis
+para.test_heatmap = 0;        % Hierarchial clustering
+para.test_lefse = 0;       % LEfSe analysis
+para.test_lefse_beta = 0;  % Beta diversity of the OTUs selected by LEfSe analysis
+para.lefse_multi = 1; % LEfSe analysis on more than 2 classes
 
 % When numbers are used to indicate classes, for the ease of interpretation
 % we can specify the class name
@@ -301,8 +307,8 @@ if para.test_alpha ~= 0
     
     
     measure_alpha = alpha.simposon;
-    measure_alpha_title = 'Simposon Index';
-    fileName = strcat(cfolder,'/Alpha_div/','/',para.proj,'_',para.test,'_alpha_simposon');
+    measure_alpha_title = 'Simpson Index';
+    fileName = strcat(cfolder,'/Alpha_div/','/',para.proj,'_',para.test,'_alpha_simpson');
     alphaAnalysis(fileName,measure_alpha,measure_alpha_title,groups_y,header)
 end
 % close all;
@@ -334,7 +340,12 @@ if isfield(para,'test_heatmap')
         %% Heatmap analysis
         % Filtering by relative abundances
         mkdir(cfolder,'heatmap');
-        sel4heat = mean(x.rel,2)>10^(-4);
+        
+        para4sel.thr_fre = 0.1;
+        para4sel.thr_rel = 2*10^-4;
+        para4sel.y = groups_y;
+        sel4heat = filterOTU(x.rel,para4sel);
+
         disp(['# of OTUs selected for heatmap analysis: ' num2str(sum(sel4heat))]);
         tax = simpleName(x.tax);
         para4heat.rpath = strcat(cfolder,'/heatmap/',para.proj,'_',para.test,'_heatmap_std');
@@ -366,98 +377,99 @@ if para.test_lefse~=0
     max_label = max(label,[],1);
     
     para4sel.thr_fre = 0.1;
-    para4sel.thr_rel = 1*10^-6;
+    para4sel.thr_rel = 2*10^-4;
     
-    for i=1:length(legend_ls)
-        for j=1:length(legend_ls)
-            if i==j
-                com = nchoosek(unique(label(:,i)),2);
-                for k=1:size(com,1)
-                    sel_com = label(:,i)==com(k,1) | label(:,i)==com(k,2);
-                    x_sub = filterBysample(x,sel_com);
-                    para4sel.y = label(sel_com,j);
-                    sel4lefse = filterOTU(x_sub.rel,para4sel);
-                    x4lefse = x_sub.rel(sel4lefse,:)*10^6;
-                    x4lefse_c = x_sub.counts(sel4lefse,:);
-                    x4lefse_clr = x_sub.clr(sel4lefse,:);
-                    y4lefse = para4sel.y;
-                    para4lefse.tax = simpleName(x_sub.tax(sel4lefse));
-                    para4lefse.y_legend = legend_ls{j};
-                    para4lefse.rpath = strcat(cfolder,'/LEfSe/',para.proj,'_',para.test,'_LEfSe_I',num2str(i));
-                    para4lefse.plot = 1;
-                    [order,score,Enrich_lefse,tax_lefse,rpath_lefse] = CalLEfSe(x4lefse,y4lefse,para4lefse);
-                    if isfield(para,'test_lefse_beta')
-                        if para.test_lefse_beta~=0
-                            
-                            writeResultTable(strcat(rpath_lefse,'_Beta_div_tbl'),tax_lefse,x_sub.sample_id,x4lefse(order,:));
-                            genBetaSH(rpath_lefse)
-                            mkdir(strcat(rpath_lefse,'_Beta_div'));
-                            measure_beta = x4lefse_clr(order,:);
-                            measure_beta_title = 'euclidean';
-                            fileName = strcat(rpath_lefse,'_Beta_div/',para.proj,'_',para.test,'_',measure_beta_title);
-                            betaAnalysis(fileName,measure_beta,measure_beta_title,y4lefse,para4lefse.y_legend,2,1)
-                            %                             keyboard
-                            %                             beta_tmp = [];
-                            %                             beta_tmp.bc = loadBeta(strcat(rpath_lefse,'_Beta_div_tbl.braycurtis.userLabel.lt.dist'),x_sub.sample_id);
-                            %                             beta_tmp.jc = loadBeta(strcat(rpath_lefse,'_Beta_div_tbl.jclass.userLabel.lt.dist'),x_sub.sample_id);
-                            %                             beta_tmp.thetayc = loadBeta(strcat(rpath_lefse,'_Beta_div_tbl.thetayc.userLabel.lt.dist'),x_sub.sample_id);
-                            %
-                            %                             measure_beta = beta_tmp.bc;
-                            %                             measure_beta_title = 'barry-curtis';
-                            %                             fileName = strcat(rpath_lefse,'_Beta_div/',para.proj,'_',para.test,'_',measure_beta_title);
-                            %                             betaAnalysis(fileName,measure_beta,measure_beta_title,groups_y,header,2,0)
-                            %
-                            %                             measure_beta = beta_tmp.jc;
-                            %                             measure_beta_title = 'jaccard';
-                            %                             fileName = strcat(rpath_lefse,'_Beta_div/',para.proj,'_',para.test,'_',measure_beta_title);
-                            %                             betaAnalysis(fileName,measure_beta,measure_beta_title,groups_y,header,2,0);
-                        end
-                    end
-                end
-            else
-                for p=1:max_label(i)
-                    com = nchoosek(unique(label(label(:,i)==p,j)),2);
-                    for k=1:size(com,1)
-                        p
-                        k
-                        sel_com = label(:,i)==p & (label(:,j)==com(k,1) | label(:,j)==com(k,2));
-                        
-                        x_sub = filterBysample(x,sel_com);
-                        gy = groups_y(sel_com);
-                        para4sel.y = gy;
-                        sel4lefse = filterOTU(x_sub.rel,para4sel);
-                        x4lefse = x_sub.rel(sel4lefse,:)*10^6;
-                        x4lefse_c = x_sub.counts(sel4lefse,:);
-                        x4lefse_clr = x_sub.clr(sel4lefse,:);
-                        y4lefse = para4sel.y;
-                        para4lefse.tax = simpleName(x_sub.tax(sel4lefse));
-                        para4lefse.y_legend = header;
-                        para4lefse.rpath = strcat(cfolder,'/LEfSe/',para.proj,'_',para.test,'_LEfSe_I',num2str(i),'P',num2str(p),'J',num2str(j),'K',num2str(com(k,1)),num2str(com(k,2)));
-                        para4lefse.plot = 1;
-                        [order,score,Enrich_lefse,tax_lefse,rpath_lefse] = CalLEfSe(x4lefse,y4lefse,para4lefse);
-                        if isfield(para,'test_lefse_beta')
-                            if para.test_lefse_beta~=0
-                                writeResultTable(rpath_lefse,tax_lefse,x_sub.sample_id,x4lefse(order,:));
-                                mkdir(rpath_lefse);
-                                mkdir(rpath_lefse,'Beta_div');
-                                measure_beta = x4lefse_clr(order,:);
-                                measure_beta_title = 'euclidean';
-                                fileName = strcat(rpath_lefse,'/Beta_div/',para.proj,'_',para.test,'_',measure_beta_title);
-                                betaAnalysis(fileName,measure_beta,measure_beta_title,gy,header(unique(gy)),2,1)
-                                
-                                %                              keyboard
-                                
-                                %                              beta_dist.bc = loadBeta(strcat(Rdir,'/',proj,'/',proj,'.16S.L7.braycurtis.userLabel.lt.ave.dist'),x_ready.sample_id);
-                                %                              beta_dist.jc = loadBeta(strcat(Rdir,'/',proj,'/',proj,'.16S.L7.jclass.userLabel.lt.ave.dist'),x_ready.sample_id);
-                                %                              beta_dist.thetayc = loadBeta(strcat(Rdir,'/',proj,'/',proj,'.16S.L7.thetayc.userLabel.lt.ave.dist'),x_ready.sample_id);
-                            end
-                        end
-                        
-                    end
-                end
-            end
-        end
-    end
+    
+%         for i=1:length(legend_ls)
+%             for j=1:length(legend_ls)
+%                 if i==j
+%                     com = nchoosek(unique(label(:,i)),2);
+%                     for k=1:size(com,1)
+%                         sel_com = label(:,i)==com(k,1) | label(:,i)==com(k,2);
+%                         x_sub = filterBysample(x,sel_com);
+%                         para4sel.y = label(sel_com,j);
+%                         sel4lefse = filterOTU(x_sub.rel,para4sel);
+%                         x4lefse = x_sub.rel(sel4lefse,:)*10^6;
+%                         x4lefse_c = x_sub.counts(sel4lefse,:);
+%                         x4lefse_clr = x_sub.clr(sel4lefse,:);
+%                         y4lefse = para4sel.y;
+%                         para4lefse.tax = simpleName(x_sub.tax(sel4lefse));
+%                         para4lefse.y_legend = legend_ls{j};
+%                         para4lefse.rpath = strcat(cfolder,'/LEfSe/',para.proj,'_',para.test,'_LEfSe_I',num2str(i),'_k',num2str(k));
+%                         para4lefse.plot = 1;
+%                         [order,score,Enrich_lefse,tax_lefse,rpath_lefse] = CalLEfSe(x4lefse,y4lefse,para4lefse);
+%                         if isfield(para,'test_lefse_beta')
+%                             if para.test_lefse_beta~=0
+%                                 writeResultTable(strcat(rpath_lefse,'_Beta_div_tbl'),tax_lefse,x_sub.sample_id,x4lefse(order,:));
+%                                 genBetaSH(rpath_lefse)
+%                                 mkdir(strcat(rpath_lefse,'_Beta_div'));
+%                                 measure_beta = x4lefse_clr(order,:);
+%                                 measure_beta_title = 'euclidean';
+%                                 fileName = strcat(rpath_lefse,'_Beta_div/',para.proj,'_',para.test,'_',measure_beta_title);
+%                                 betaAnalysis(fileName,measure_beta,measure_beta_title,y4lefse,para4lefse.y_legend,2,1)
+%                                 %                             keyboard
+%                                 %                             beta_tmp = [];
+%                                 %                             beta_tmp.bc = loadBeta(strcat(rpath_lefse,'_Beta_div_tbl.braycurtis.userLabel.lt.dist'),x_sub.sample_id);
+%                                 %                             beta_tmp.jc = loadBeta(strcat(rpath_lefse,'_Beta_div_tbl.jclass.userLabel.lt.dist'),x_sub.sample_id);
+%                                 %                             beta_tmp.thetayc = loadBeta(strcat(rpath_lefse,'_Beta_div_tbl.thetayc.userLabel.lt.dist'),x_sub.sample_id);
+%                                 %
+%                                 %                             measure_beta = beta_tmp.bc;
+%                                 %                             measure_beta_title = 'barry-curtis';
+%                                 %                             fileName = strcat(rpath_lefse,'_Beta_div/',para.proj,'_',para.test,'_',measure_beta_title);
+%                                 %                             betaAnalysis(fileName,measure_beta,measure_beta_title,groups_y,header,2,0)
+%                                 %
+%                                 %                             measure_beta = beta_tmp.jc;
+%                                 %                             measure_beta_title = 'jaccard';
+%                                 %                             fileName = strcat(rpath_lefse,'_Beta_div/',para.proj,'_',para.test,'_',measure_beta_title);
+%                                 %                             betaAnalysis(fileName,measure_beta,measure_beta_title,groups_y,header,2,0);
+%                             end
+%                         end
+%                     end
+%                 else
+%                     for p=1:max_label(i)
+%                         com = nchoosek(unique(label(label(:,i)==p,j)),2);
+%                         for k=1:size(com,1)
+%                             p
+%                             k
+%                             sel_com = label(:,i)==p & (label(:,j)==com(k,1) | label(:,j)==com(k,2));
+%     
+%                             x_sub = filterBysample(x,sel_com);
+%                             gy = groups_y(sel_com);
+%                             para4sel.y = gy;
+%                             sel4lefse = filterOTU(x_sub.rel,para4sel);
+%                             x4lefse = x_sub.rel(sel4lefse,:)*10^6;
+%                             x4lefse_c = x_sub.counts(sel4lefse,:);
+%                             x4lefse_clr = x_sub.clr(sel4lefse,:);
+%                             y4lefse = para4sel.y;
+%                             para4lefse.tax = simpleName(x_sub.tax(sel4lefse));
+%                             para4lefse.y_legend = header;
+%                             para4lefse.rpath = strcat(cfolder,'/LEfSe/',para.proj,'_',para.test,'_LEfSe_I',num2str(i),'P',num2str(p),'J',num2str(j),'K',num2str(com(k,1)),num2str(com(k,2)));
+%                             para4lefse.plot = 1;
+%                             [order,score,Enrich_lefse,tax_lefse,rpath_lefse] = CalLEfSe(x4lefse,y4lefse,para4lefse);
+%                             %                         genMultiLEfSe(x4lefse,y4lefse,para4lefse);
+%                             if isfield(para,'test_lefse_beta')
+%                                 if para.test_lefse_beta~=0
+%                                     writeResultTable(rpath_lefse,tax_lefse,x_sub.sample_id,x4lefse(order,:));
+%                                     mkdir(rpath_lefse);
+%                                     mkdir(rpath_lefse,'Beta_div');
+%                                     measure_beta = x4lefse_clr(order,:);
+%                                     measure_beta_title = 'euclidean';
+%                                     fileName = strcat(rpath_lefse,'/Beta_div/',para.proj,'_',para.test,'_',measure_beta_title);
+%                                     betaAnalysis(fileName,measure_beta,measure_beta_title,gy,header(unique(gy)),2,1)
+%     
+%                                     %                              keyboard
+%     
+%                                     %                              beta_dist.bc = loadBeta(strcat(Rdir,'/',proj,'/',proj,'.16S.L7.braycurtis.userLabel.lt.ave.dist'),x_ready.sample_id);
+%                                     %                              beta_dist.jc = loadBeta(strcat(Rdir,'/',proj,'/',proj,'.16S.L7.jclass.userLabel.lt.ave.dist'),x_ready.sample_id);
+%                                     %                              beta_dist.thetayc = loadBeta(strcat(Rdir,'/',proj,'/',proj,'.16S.L7.thetayc.userLabel.lt.ave.dist'),x_ready.sample_id);
+%                                 end
+%                             end
+%     
+%                         end
+%                     end
+%                 end
+%             end
+%         end
     
     if isfield(para,'lefse_multi')==1
         if para.lefse_multi==1
@@ -477,7 +489,7 @@ if para.test_lefse~=0
                         if length(unique(y4lefse))>2
                             para4lefse.y_legend = legend_ls{j};
                             para4lefse.tax = simpleName(x_sub.tax(sel4lefse));
-                            para4lefse.rpath = strcat(cfolder,'/LEfSe/',para.proj,'_',para.test,'_LEfSe_Multi_i',num2str(i));
+                            para4lefse.rpath = strcat(cfolder,'/LEfSe/',para.proj,'_',para.test,'_LEfSe_Multi2_i',num2str(i));
                             genMultiLEfSe(x4lefse,y4lefse,para4lefse);
                         end
                     else
