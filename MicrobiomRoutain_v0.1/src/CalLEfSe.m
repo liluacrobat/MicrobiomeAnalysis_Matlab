@@ -21,10 +21,17 @@ Enrich = y_legend(u(Enrich_m));
 
 save('data3lefse_temp','x','y');
 system('R CMD BATCH EsLEfSe.R');
-load('lefse_ana_result_tmp','res_group');
+if isfile('lefse_ana_result_tmp.mat')
+    load('lefse_ana_result_tmp','res_group');
+    order = mkList(res_group.Names);
+    score = res_group.scores;
+else
+    res_group.Names = [];
+    res_group.scores = [];
+    order = [];
+    score = [];
+end
 
-order = mkList(res_group.Names);
-score = res_group.scores;
 Enrich_lefse = [];
 tax_lefse = [];
 fid = fopen(strcat(rpath,'.txt'),'w');
@@ -48,7 +55,9 @@ if ~isempty(res_group.Names)
             num=num+1;
         end
     end
-    if num>length(name_det)
+    
+    
+    if num>length(name_det)/2
         if name_flag == 1
             name_as = y_cmp{1};
             name_as_n = y_cmp{2};
@@ -85,9 +94,11 @@ if isfield(para,'plot')==0
     para.plot = 1;
 end
 if para.plot~=0
-    plotLEfSe(score,Enrich_lefse,tax_lefse, y_cmp)
-    keyboard
-    plotPDF(gcf,rpath);
+    if ~isempty(score)
+        plotLEfSe(score,Enrich_lefse,tax_lefse, y_cmp)
+        keyboard
+        plotPDF(gcf,rpath);
+    end
 end
 end
 function y = mkList(x)
