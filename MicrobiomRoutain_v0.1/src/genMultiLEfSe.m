@@ -82,8 +82,9 @@ Enrich_lefse = para.y_legend(group);
 tax_lefse = tax(order);
 save(rpath,'order','score','Enrich_lefse','tax_lefse');
 
-plotLEfSe(score,Enrich_lefse,tax_lefse, para.y_legend)
-plotPDF(gcf,rpath);
+% plotLEfSe(score,Enrich_lefse,tax_lefse, para.y_legend)
+% keyboard
+% plotPDF(gcf,rpath);
 end
 function plotLEfSe(score,Enrich_lefse,tax_lefse, legend_ls,FaceColor)
 if nargin<5
@@ -115,6 +116,7 @@ if length(xt)<4
 end
 box on
 legend(legend_ls(u),'location','southeast');
+set(gca,'FontSize',12);
 end
 function [idx12,idx21]=AlignID(ID1,ID2)
 % 2->1

@@ -17,17 +17,27 @@ xlabel('LDA SCORE (log 10)');
 pbaspect([1 1.5 1]);
 % ax = axis;
 ax(1) = min(score)*1.2;
+if length(unique(Enrich_lefse))==1
+    ax(1) = 0;
+end
 ax(2) = max(score)*1.2;
 ax(3) = 0;
 ax(4) = length(idx1)+1;
+if ax(1)==ax(2)
+    ax(1) = 0;
+end
 axis(ax);
 xt = xticks;
+xticklabels(abs(xt));
 if length(xt)<4
     xl = fix(max(abs(score)));
     xticks(-xl:xl);
+    xticklables(abs(-xl:xl));
 end
+
 box on
 legend(legend_ls(u));
+set(gca,'FontSize',12);
 end
 function [idx12,idx21]=AlignID(ID1,ID2)
 % 2->1

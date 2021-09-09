@@ -25,6 +25,9 @@ function [row_sel,col_sel] = plotHeatmap(X,para)
 if ~isfield(para,'plotcol')
     para.plotcol = 0;
 end
+if ~isfield(para,'group_col')
+    para.group_col = 1;
+end
 if ~isfield(para,'plotrow')
     para.plotrow = 0;
 end
@@ -75,21 +78,26 @@ Z_c = linkage(pd_c,para.clinkage);
 plotPDF(gcf,strcat(para.rpath,'_dendrogram'));
 
 flag_sym = strcmp(para.norm,'std')==1;
-CGobj = clustergram(X,'Cluster',para.cluster,'Colormap',cmap,'Symmetric',false,...
-    'OptimalLeafOrder',false,'RowPDist',para.drow,'ColumnPDist',para.dcol,...
-    'Linkage',{para.rlinkage,para.clinkage});
-% keyboard
-plot(CGobj);
-plotPDF(gcf,strcat(para.rpath,'_clustergram_w_den'));
-
-[~,col_sel] = heatmapLabels(CGobj);
-
+if para.group_col==1
+    CGobj = clustergram(X,'Cluster',para.cluster,'Colormap',cmap,'Symmetric',false,...
+        'OptimalLeafOrder',false,'RowPDist',para.drow,'ColumnPDist',para.dcol,...
+        'Linkage',{para.rlinkage,para.clinkage});
+    % keyboard
+    plot(CGobj);
+    plotPDF(gcf,strcat(para.rpath,'_clustergram_w_den'));
+    
+    [~,col_sel] = heatmapLabels(CGobj);
+else
+    CGobj = [];
+    col_sel = 1:size(X,2);
+end
 
 CGobj_vis = clustergram(X_vis(:,col_sel),'Cluster','column','Colormap',cmap,'Symmetric',flag_sym,...
     'OptimalLeafOrder',false,'RowPDist',para.drow,'ColumnPDist',para.dcol,...
-    'Linkage',{para.rlinkage,para.clinkage},'DisplayRatio',[0.001 0.2]);
+    'Linkage',{para.rlinkage,para.clinkage},'DisplayRatio',[0.001 0.15]);
 
 [row_sel,~] = heatmapLabels(CGobj_vis);
+a=para.rowname(row_sel);
 % if strcmp(para.norm,'std')
 %     fig =figure;
 %     colormap(fig,cmap);
@@ -97,7 +105,7 @@ CGobj_vis = clustergram(X_vis(:,col_sel),'Cluster','column','Colormap',cmap,'Sym
 % end
 
 if para.plotrow==1
-    set(CGobj_vis,'RowLabels',para.rowname(row_sel));
+    set(CGobj_vis,'RowLabels',para.rowname);
 else
     set(CGobj_vis,'RowLabels',[]);
 end
@@ -107,10 +115,17 @@ else
     set(CGobj_vis,'ColumnLabels',[]);
 end
 plot(CGobj_vis);
+set(0,'ShowHiddenHandles','on')
+% Get all handles from root
+allhnds = get(0,'Children');
+% Find hearmap axis and change the font size
+h = findall(allhnds, 'Tag', 'HeatMapAxes');
+set(h, 'FontSize', 12)
 keyboard
 plotPDF(gcf,strcat(para.rpath,'_clustergram_normalized'));
 
-save(strcat(para.rpath,'_clustergram_normalizedresults','CGobj','CGobj_vis','col_sel','row_sel','Z_c','para','outperm_c'))
+save(strcat(para.rpath,'_clustergram_normalizedresults'),'CGobj','CGobj_vis',...
+    'col_sel','row_sel','Z_c','para','outperm_c');
 
 
 if para.plotGroup==1

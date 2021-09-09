@@ -39,11 +39,29 @@ end
 fprintf(fid,'\n');
 fprintf(fid,'Group-A\tGroup-B\tLower 95%% of diff (Group-A - Group-B)\tMean diff (Group-A - Group-B)\tHigher 95%% of diff (Group-A - Group-B)\tp-value\n');
 [m,~] = size(c);
+anova_p = ones(length(nms));
 for i=1:m
-    fprintf(fid,'%d\t%d\t%f\t%f\t%f\t%f\n',c(i,1),c(i,2),c(i,3),c(i,4),c(i,5),c(i,6));
+    fprintf(fid,'%s\t%s\t%f\t%f\t%f\t%f\n',nms{c(i,1)},nms{c(i,2)},c(i,3),c(i,4),c(i,5),c(i,6));
+    anova_p(c(i,1),c(i,2)) = c(i,6);
+    anova_p(c(i,2),c(i,1)) = c(i,6);
 end
-
+[hidx,~] = AlignID(header,nms);
+anova_p = anova_p(hidx,hidx);
+nms_s = nms(hidx);
 fprintf(fid,'\n');
+
+fprintf(fid,'Pairwise ANOVA p-value\n');
+for i=1:length(nms)
+fprintf(fid,'\t%s',nms_s{i});
+end
+fprintf(fid,'\n');
+for i=1:length(nms)
+    fprintf(fid,'%s',nms_s{i});
+    for j=1:length(nms)
+        fprintf(fid,'\t%f',anova_p(i,j));
+    end
+    fprintf(fid,'\n');
+end
 
 fprintf(fid,'Pairwise t-test p-value\n');
 for i=1:length(nms)
@@ -73,7 +91,7 @@ X = X(idx);
 boxplot(X,Y,'Colors','k','Widths',wid,'Symbol','k+');
 h = findobj(gca,'Tag','Box');
 for i=length(h):-1:1
-    patch(get(h(i),'XData'),get(h(i),'YData'),facecolor(mod(length(h)-i+1-1,7)+1,:),'FaceAlpha',0.8,'EdgeColor','none');
+    patch(get(h(i),'XData'),get(h(i),'YData'),facecolor(i,:),'FaceAlpha',0.8,'EdgeColor','none');
 end
 h = boxplot(X,Y,'Colors','k','Widths',wid,'Symbol','k+');
 set(h,{'linew'},{1.5});

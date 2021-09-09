@@ -40,7 +40,7 @@ else
     ylabel(['PC2 (' num2str(round(power(2)*10000)/100) '%)']);
     if flag == 1
         for i=1:length(U)
-            if sum(Y==U(i))>4
+            if sum(Y==U(i))>=4
                 plotEllipse(mapped_data(1:2,Y==U(i)),FaceColor(i,:))
             end
         end

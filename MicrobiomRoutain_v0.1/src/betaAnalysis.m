@@ -62,8 +62,17 @@ end
 
 for i=1:length(header)
     fprintf(fid,'%s',header{i});
+    
     for j=1:length(header)
-        fprintf(fid,'\t%f',p_mtx(i,j));
+        if i==j
+            fprintf(fid,'\t%f',1);
+        else
+            if i>j
+                fprintf(fid,'\t%f',p_mtx(j,i));
+            else
+                fprintf(fid,'\t%f',p_mtx(i,j));
+            end
+        end
     end
     fprintf(fid,'\n');
 end

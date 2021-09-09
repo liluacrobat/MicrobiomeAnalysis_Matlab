@@ -1,5 +1,5 @@
 function f_ls = addPrefix(id_ls,prefix,num_flag)
-if nargin<4
+if nargin<3
     num_flag=0;
 end
 
