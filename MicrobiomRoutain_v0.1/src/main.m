@@ -294,7 +294,7 @@ if para.test_alpha ~= 0
     alphaAnalysis(fileName,measure_alpha,measure_alpha_title,groups_y,header)
     
     
-    measure_alpha = alpha.shannon;
+    measure_alpha = alpha.chao1;
     measure_alpha_title = 'Chao1 Index';
     fileName = strcat(cfolder,'/Alpha_div/','/',para.proj,'_',para.test,'_alpha_chao1');
     alphaAnalysis(fileName,measure_alpha,measure_alpha_title,groups_y,header)
