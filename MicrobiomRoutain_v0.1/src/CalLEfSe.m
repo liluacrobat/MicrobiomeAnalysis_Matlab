@@ -21,17 +21,10 @@ Enrich = y_legend(u(Enrich_m));
 
 save('data3lefse_temp','x','y');
 system('R CMD BATCH EsLEfSe.R');
-if isfile('lefse_ana_result_tmp.mat')
-    load('lefse_ana_result_tmp','res_group');
-    order = mkList(res_group.Names);
-    score = res_group.scores;
-else
-    res_group.Names = [];
-    res_group.scores = [];
-    order = [];
-    score = [];
-end
+load('lefse_ana_result_tmp','res_group');
 
+order = mkList(res_group.Names);
+score = res_group.scores;
 Enrich_lefse = [];
 tax_lefse = [];
 fid = fopen(strcat(rpath,'.txt'),'w');
@@ -42,46 +35,12 @@ if ~isempty(res_group.Names)
     
     Neg_name = Enrich_lefse(score<0);
     Pos_name = Enrich_lefse(score>0);
-    if length(Neg_name)>length(Pos_name)
-        name_det = Neg_name;
-        name_flag = 0;
-    else
-        name_det = Pos_name;
-        name_flag = 1;
-    end
-    num = 0;
-    for i=1:length(name_det)
-        if strcmp(name_det{i},y_cmp{1})==1
-            num=num+1;
-        end
-    end
-    
-    
-    if num>length(name_det)/2
-        if name_flag == 1
-            name_as = y_cmp{1};
-            name_as_n = y_cmp{2};
-        else
-            name_as = y_cmp{2};
-            name_as_n = y_cmp{1};
-        end
-    else
-        if name_flag == 1
-            name_as = y_cmp{2};
-            name_as_n = y_cmp{1};
-        else
-            name_as = y_cmp{1};
-            name_as_n = y_cmp{2};
-        end
-    end
-    for i=1:length(score)
-        if score(i)>0
-            Enrich_lefse{i} = name_as;
-        else
-            Enrich_lefse{i} = name_as_n;
-        end
-    end
-    
+    N_s = score(score<0);
+    P_s = score(score>0);
+    [~,N_id] = min(N_s);
+    [~,P_id] = max(P_s);
+    Enrich_lefse(score<0) = Neg_name(N_id);
+     Enrich_lefse(score>0) = Pos_name(P_id);
     for i=1:length(Enrich_lefse)
         fprintf(fid,'%d\t%s\t%s\t%f\n',order(i),tax_lefse{i},Enrich_lefse{i},score(i));
     end
