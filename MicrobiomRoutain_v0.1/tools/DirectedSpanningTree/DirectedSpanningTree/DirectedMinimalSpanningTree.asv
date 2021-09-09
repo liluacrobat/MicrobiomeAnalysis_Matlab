@@ -1,0 +1,8 @@
+function [ TreeMatric,Cost ] =  DirectedMinimalSpanningTree( OriginalCostMatric,Root )
+
+MaxTree =  DirectedMaximumSpanningTree( -OriginalCostMatric,Root );
+TreeMatric = MaxTree;
+
+Cost
+
+end
