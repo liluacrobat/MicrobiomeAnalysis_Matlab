@@ -9,5 +9,5 @@ s = strsplit(path2tbl,'/');
 
 fprintf(fid,'biom convert -i %s.txt -o %s.biom --to-json --table-type "OTU table"\n',s{end},s{end})
 fprintf(fid,'mothur "#make.shared(biom=%s.biom)"\n',s{end})
-fprintf(fid,'mothur "#dist.shared(shared=%s.shared, calc=thetayc-jclass-braycurtis, subsample=f)"\n',s{end})
+fprintf(fid,'mothur "#dist.shared(shared=%s.shared, calc=thetayc-jclass-braycurtis, subsample=t)"\n',s{end})
 end
