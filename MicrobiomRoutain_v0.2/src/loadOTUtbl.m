@@ -5,7 +5,7 @@ if nargin<2
 else
     tax_flag = 1;
 end
-tbl = readtable(tbl_name,'delimiter','\t');
+tbl = readtable(tbl_name,'delimiter','\t',"VariableNamingRule","preserve",'ReadVariableNames',true);
 OTU_tbl.tax = table2array(tbl(:,1));
 OTU_tbl.sample_id = tbl.Properties.VariableNames(2:end-tax_flag);
 OTU_tbl.counts = table2array(tbl(:,2:end-tax_flag));
