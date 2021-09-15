@@ -156,7 +156,7 @@ if flag.pre==1
         cd(strcat(Rdir,'/',proj));
         genBetaSH_Gen(strcat(Rdir,'/',proj,'/',proj,'_table_ready')) % Generate shell script
         system('chmod 777 tmp_cal_beta.sh');
-        system('sh tmp_cal_beta.sh');                                % Run the script with Mothur
+        keyboard % Run the script  'tmp_cal_beta.sh' with Mothur
         cd(Cdir);
         
         % Load the beta diversity
