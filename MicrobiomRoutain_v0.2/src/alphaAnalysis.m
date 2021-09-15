@@ -91,7 +91,7 @@ X = X(idx);
 boxplot(X,Y,'Colors','k','Widths',wid,'Symbol','k+');
 h = findobj(gca,'Tag','Box');
 for i=length(h):-1:1
-    patch(get(h(i),'XData'),get(h(i),'YData'),facecolor(i,:),'FaceAlpha',0.8,'EdgeColor','none');
+    patch(get(h(i),'XData'),get(h(i),'YData'),facecolor(length(h)-i+1,:),'FaceAlpha',0.8,'EdgeColor','none');
 end
 h = boxplot(X,Y,'Colors','k','Widths',wid,'Symbol','k+');
 set(h,{'linew'},{1.5});
