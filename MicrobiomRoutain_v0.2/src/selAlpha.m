@@ -6,12 +6,13 @@ if isempty(x.ob_otu)
 else
     y.ob_otu = x.ob_otu(sel);
 end
+
 if isempty(x.shannon)
     y.shannon = [];
 else
     y.shannon = x.shannon(sel);
 end
-y.simposon = x.simposon(sel);
+
 if isempty(x.chao1)
     y.chao1 = [];
 else
