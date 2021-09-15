@@ -143,8 +143,10 @@ if flag.pre==1
         shannon_index = [];
         chao1_index = [];
         simposon = [];
-        load(strcat(Rdir,'/',proj,'/',proj,'_alpha'),'observed_otu', 'shannon_index', ...
-            'chao1_index', 'simposon','Result');
+        if isfile(strcat(Rdir,'/',proj,'/',proj,'_alpha'))
+            load(strcat(Rdir,'/',proj,'/',proj,'_alpha'),'observed_otu', 'shannon_index', ...
+                'chao1_index', 'simposon','Result');
+        end
     end
     
     if flag.beta==1
@@ -158,9 +160,15 @@ if flag.pre==1
         cd(Cdir);
         
         % Load the beta diversity
-        beta_dist.bc = loadBeta(strcat(Rdir,'/',proj,'/',proj,'_table_ready.braycurtis.userLabel.lt.ave.dist'),x_ready.sample_id);
-        beta_dist.jc = loadBeta(strcat(Rdir,'/',proj,'/',proj,'_table_ready.jclass.userLabel.lt.ave.dist'),x_ready.sample_id);
-        beta_dist.thetayc = loadBeta(strcat(Rdir,'/',proj,'/',proj,'_table_ready.thetayc.userLabel.lt.ave.dist'),x_ready.sample_id);
+        if isfile(strcat(Rdir,'/',proj,'/',proj,'_table_ready.braycurtis.userLabel.lt.ave.dist'))
+            beta_dist.bc = loadBeta(strcat(Rdir,'/',proj,'/',proj,'_table_ready.braycurtis.userLabel.lt.ave.dist'),x_ready.sample_id);
+        end
+        if isfile(strcat(Rdir,'/',proj,'/',proj,'_table_ready.jclass.userLabel.lt.ave.dist'))
+            beta_dist.jc = loadBeta(strcat(Rdir,'/',proj,'/',proj,'_table_ready.jclass.userLabel.lt.ave.dist'),x_ready.sample_id);
+        end
+        if isfile(strcat(Rdir,'/',proj,'/',proj,'_table_ready.thetayc.userLabel.lt.ave.dist'))
+            beta_dist.thetayc = loadBeta(strcat(Rdir,'/',proj,'/',proj,'_table_ready.thetayc.userLabel.lt.ave.dist'),x_ready.sample_id);
+        end
     else
         beta_dist = [];
     end
