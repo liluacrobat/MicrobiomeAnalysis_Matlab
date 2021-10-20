@@ -1,9 +1,9 @@
 function sel = filterOTU(rel,para)
 
-if isfield(para,'thr_fre')
+if ~isfield(para,'thr_fre')
     para.thr_fre = 0;
 end
-if isfield(para,'thr_rel')
+if ~isfield(para,'thr_rel')
     para.thr_frerel = 0;
 end
 y = para.y;
