@@ -130,7 +130,7 @@ if flag.pre==1
         
         % Calculate alpha diversity
         
-        para4alpha.num = min(sum(x_ready.counts,1))); % Rarefaction in depth nthr
+        para4alpha.num = min(sum(x_ready.counts,1)); % Rarefaction in depth nthr
         para4alpha.rep = 100;  % Repeat 100 times, report the average value
         
         [observed_otu, shannon_index, chao1_index,simposon,Result] = CalAlphaDiversity(...
