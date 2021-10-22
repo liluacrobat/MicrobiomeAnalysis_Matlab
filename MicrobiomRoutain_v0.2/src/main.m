@@ -89,7 +89,7 @@ if flag.pre==1
         set(gca,'FontSize',9);
         ylabel('Total reads','Fontweight','Normal')
         xticks(1:length(total_counts));
-        xticklabels(x_tbl.sample_id);
+        xticklabels(strrep(x_tbl.sample_id,'_',' '));
         keyboard
         plotPDF(gcf,strcat(Rdir,'/',proj,'/',proj,'_reads_per_sample_dot'));
         
