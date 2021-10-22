@@ -18,4 +18,11 @@ if isempty(x.chao1)
 else
     y.chao1 = x.chao1(sel);
 end
+
+if isempty(x.simposon)
+    y.simposon = [];
+else
+    y.simposon = x.simposon(sel);
+end
+
 end
