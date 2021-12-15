@@ -329,7 +329,7 @@ if para.test_beta ~= 0
     betaAnalysis(fileName,measure_beta,measure_beta_title,groups_y,header,2,1)
     
     measure_beta = beta.bc;
-    measure_beta_title = 'barry-curtis';
+    measure_beta_title = 'bray-curtis';
     fileName = strcat(cfolder,'/Beta_div/',para.proj,'_',para.test,'_',measure_beta_title);
     betaAnalysis(fileName,measure_beta,measure_beta_title,groups_y,header,2,0)
     
