@@ -19,6 +19,8 @@ colormap =[248 118 109
     147 170 0
     0 185 227
     255 97 195]/255;
+colormap =[ 0 186 56
+    248 118 109]/255;
 else
     colormap =  cbrewer('qual', 'Set1',n);
 %     colormap = distinguishable_colors(n);
