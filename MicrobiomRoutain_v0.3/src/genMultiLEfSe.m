@@ -81,41 +81,105 @@ end
 Enrich_lefse = para.y_legend(group);
 tax_lefse = tax(order);
 save(rpath,'order','score','Enrich_lefse','tax_lefse');
+sel = abs(score)>2;
+% sel = selTop(score,50);
 
-% plotLEfSe(score,Enrich_lefse,tax_lefse, para.y_legend)
-% keyboard
-% plotPDF(gcf,rpath);
+plotLEfSe(score(sel),Enrich_lefse(sel),tax_lefse(sel), para.y_legend);
+% plotLEfSe(score,Enrich_lefse,tax_lefse, para.y_legend);
+keyboard
+plotPDF(gcf,rpath);
 end
+function f = selTop(score,n)
+order = 1:length(score);
+[sc_sorted,idx]= sort(score,'descend');
+id_sort = order(idx);
+f = zeros(size(score));
+f(id_sort(1:n))=1;
+f = f==1;
+end
+% function plotLEfSe(score,Enrich_lefse,tax_lefse, legend_ls,FaceColor)
+% if nargin<5
+%     FaceColor = defaultColor(length(legend_ls));
+% end
+% [idx1, ~] = AlignID(Enrich_lefse, legend_ls);
+% w=0.4;
+% bx = 1:length(idx1);
+% bx = flip(bx);
+% u = unique(idx1);
+% figure, hold on;
+% for i=1:length(u)
+%     barh(bx(idx1==u(i)),score(idx1==u(i)),'FaceColor', FaceColor(i,:),'linewidth',1,'EdgeColor',FaceColor(i,:),'BarWidth',w);
+% end
+% yticks(1:length(idx1));
+% yticklabels(flip(tax_lefse));
+% xlabel('LDA SCORE (log 10)');
+% pbaspect([1 1.5 1]);
+% % ax = axis;
+% ax(1) = 0;
+% ax(2) = max(score)*1.2;
+% ax(3) = 0;
+% ax(4) = length(idx1)+1;
+% axis(ax);
+% xt = xticks;
+% if length(xt)<4
+%     xl = fix(max(abs(score)));
+%     xticks(-xl:xl);
+% end
+% box on
+% legend(legend_ls(u),'location','southeast');
+% set(gca,'FontSize',12);
+% end
 function plotLEfSe(score,Enrich_lefse,tax_lefse, legend_ls,FaceColor)
+for i=1:length(tax_lefse)
+    tax_lefse{i} = strrep(tax_lefse{i},'_',' ');
+end
 if nargin<5
     FaceColor = defaultColor(length(legend_ls));
 end
+
 [idx1, ~] = AlignID(Enrich_lefse, legend_ls);
+if length(unique(Enrich_lefse))==2
+    score(idx1==min(idx1))=-score(idx1==min(idx1));
+end
+[score,ii] = sort(score);
+Enrich_lefse = Enrich_lefse(ii);
+idx1 = idx1(ii);
+tax_lefse = tax_lefse(ii);
+
 w=0.4;
 bx = 1:length(idx1);
 bx = flip(bx);
 u = unique(idx1);
+
+
+
 figure, hold on;
+if length(unique(Enrich_lefse))==2
+    ax(1) = min(score)*1.2;
+else
+    ax(1) = 0;
+end
+
+ax(2) = max(score)*1.2;
+ax(3) = 0;
+ax(4) = length(idx1)+1;
+axis(ax);
 for i=1:length(u)
-    barh(bx(idx1==u(i)),score(idx1==u(i)),'FaceColor', FaceColor(i,:),'linewidth',1,'EdgeColor',FaceColor(i,:),'BarWidth',w);
+    barh(bx(idx1==u(i)),score(idx1==u(i)),w,'FaceColor', FaceColor(i,:),'linewidth',1,'EdgeColor',FaceColor(i,:));
 end
 yticks(1:length(idx1));
 yticklabels(flip(tax_lefse));
 xlabel('LDA SCORE (log 10)');
 pbaspect([1 1.5 1]);
 % ax = axis;
-ax(1) = 0;
-ax(2) = max(score)*1.2;
-ax(3) = 0;
-ax(4) = length(idx1)+1;
-axis(ax);
+
 xt = xticks;
 if length(xt)<4
     xl = fix(max(abs(score)));
     xticks(-xl:xl);
 end
 box on
-legend(legend_ls(u),'location','southeast');
+legend(legend_ls(u),'location','northeast');
 set(gca,'FontSize',12);
 end
 function [idx12,idx21]=AlignID(ID1,ID2)
