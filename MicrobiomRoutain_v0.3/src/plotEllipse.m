@@ -33,7 +33,10 @@ end
 avg = mean(data);
 
 % Get the 95% confidence interval error ellipse
-chisquare_val = 2.4477;%sqrt(1.38629);%2.4477;
+%chisquare_val = 2.4477;%sqrt(1.38629);%2.4477;
+confidence_level = 0.67;
+chisquare_val = sqrt(chi2inv(confidence_level,2));
+
 theta_grid = linspace(0,2*pi);
 phi = angle;
 X0=avg(1);
