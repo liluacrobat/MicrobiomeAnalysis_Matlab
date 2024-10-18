@@ -8,7 +8,7 @@ function Main
 %  Alpha diversity
 %  Beta diversity
 %  Group comparison using LEfSe
-%  Heqatmap of abundance of taxa selected by LEfSe
+%  Heqatmap of selected taxa
 %
 % Note:
 % lines having comments starting with '% ***' are ones need to change based on
