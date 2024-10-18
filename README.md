@@ -3,17 +3,17 @@
 Matlab 2023b
 
 ## Analysis
-Basic summary of samples \\
-Top 20 OTUs \\
-Alpha diversity \\
-Beta diversity \\
-Group comparison using LEfSe \\
-Heqatmap of selected taxa \\
+Basic summary of samples\
+Top 20 OTUs\
+Alpha diversity\
+Beta diversity\
+Group comparison using LEfSe\
+Heqatmap of selected taxa\
 
-Note: \\
+Note:\
 lines having comments starting with '% ***' are ones need to change based on specific study
 
 
 ## Requirement 
-R packages: R.matlab, fossil, vegan \\
+R packages: R.matlab, fossil, vegan\
 Create an environment of Mothur using anconda: conda create mothur mothur,biom-format
