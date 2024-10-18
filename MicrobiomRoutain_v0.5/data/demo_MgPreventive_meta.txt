@@ -1,0 +1,9 @@
+Mouse # 	Cage # 	Treatment	Concentration (ng/µl)
+1D	1303556	Untreated	1349.2
+9D	1303557	Untreated	1020.8
+11B	1256778	Blank MPs	1541.8
+12B	1256778	Blank MPs	1714.4
+21M	1303555	Mg MPs	1141.5
+22M	1303555	Mg MPs	1281.1
+31H	1256774	Hctrl	1345.2
+32H	1256774	Hctrl	1282.1

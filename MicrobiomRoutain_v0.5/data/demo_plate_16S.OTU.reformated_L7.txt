@@ -1,0 +1,5 @@
+#OTU ID	11B	12B	1D	21M	22M	31H	32H	9D
+d__Bacteria;d__Bacteria_unclassified;d__Bacteria_unclassified;d__Bacteria_unclassified;d__Bacteria_unclassified;d__Bacteria_unclassified;d__Bacteria_unclassified_(OTU0005)	0	0	6	258	1316	0	0	0
+d__Bacteria;d__Bacteria_unclassified;d__Bacteria_unclassified;d__Bacteria_unclassified;d__Bacteria_unclassified;d__Bacteria_unclassified;d__Bacteria_unclassified_(OTU0007)	0	0	0	0	158	0	20	111
+d__Bacteria;d__Bacteria_unclassified;d__Bacteria_unclassified;d__Bacteria_unclassified;d__Bacteria_unclassified;d__Bacteria_unclassified;d__Bacteria_unclassified_(OTU0009)	0	0	1	0	10	0	0	0
+d__Bacteria;d__Bacteria_unclassified;d__Bacteria_unclassified;d__Bacteria_unclassified;d__Bacteria_unclassified;d__Bacteria_unclassified;d__Bacteria_unclassified_(OTU0022)	0	0	0	0	0	0	0	0
