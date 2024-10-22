@@ -19,7 +19,8 @@ function Main
 % Last updated 10/18/2024
 % Required R packages: R.matlab, fossil, vegan
 % Setting:
-% Create an environment of Mothur using anconda: conda create mothur mothur,biom-format
+% install ANCONDA
+% Create an environment of mothur using "conda create -n mothur -c bioconda mothur,biom-format"
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clc;clear;close all;close all hidden
 % Setting environment for the R, may need to change accordingly in Windows
