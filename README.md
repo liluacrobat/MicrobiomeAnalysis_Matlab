@@ -1,4 +1,13 @@
 # Routain analysis of microbiome study using MATLAB
+## Matlab basics
+https://matlabacademy.mathworks.com/?page=1&sort=featured
+
+Please take the courses in the following order: 
+MATLAB Onramp
+MATLAB Fundamentals
+MATLAB for Data Processing and Visualization
+MATLAB Programming Techniques (optional)
+
 ## Matlab version
 Matlab 2023b
 
