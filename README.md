@@ -17,11 +17,10 @@ Top 20 OTUs\
 Alpha diversity\
 Beta diversity\
 Group comparison using LEfSe\
-Heqatmap of selected taxa\
+Heatmap of selected taxa\
 
 Note:\
 lines having comments starting with '% ***' are ones need to change based on specific study
-
 
 ## Requirement 
 R packages: R.matlab, fossil, vegan\
