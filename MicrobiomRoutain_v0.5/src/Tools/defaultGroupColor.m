@@ -1,8 +1,7 @@
 function colorGroups = defaultGroupColor(n)
 k = length(n);
 n(k+1:7) = 7;
-colorGroups{1} =  defaultColor(n(1));
-% colorGroups{1} =  cbrewer('qual', 'Set1',n(1));
+colorGroups{1} =  cbrewer('qual', 'Set1',n(1));
 colorGroups{2} =  cbrewer('qual', 'Set2',n(2));
 colorGroups{3} =  cbrewer('qual', 'Set3',n(3));
 colorGroups{4} =  cbrewer('qual', 'Paired',n(4));
