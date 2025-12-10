@@ -14,6 +14,7 @@ end
 yticks(1:length(idx1));
 yticklabels(flip(tax_lefse));
 xlabel('LDA SCORE (log 10)');
+pbaspect([1 1.5 1]);
 % ax = axis;
 ax(1) = min(score)*1.2;
 if length(unique(Enrich_lefse))==1
@@ -27,27 +28,16 @@ if ax(1)==ax(2)
 end
 axis(ax);
 xt = xticks;
-xticklabels(xt);
-box on
-legend(legend_ls(u));
-set(gca,'FontSize',18);
-
+xticklabels(abs(xt));
 if length(xt)<4
     xl = fix(max(abs(score)));
     xticks(-xl:xl);
-    xticklabels((-xl:xl));
-end
-if length(score)>3
-    if length(score)>30
-        pbaspect([1 2 1]);
-    else
-        pbaspect([1 1.5 1]);
-    end
-else
-    pbaspect([3 1 1]);
+    xticklables(abs(-xl:xl));
 end
 
-
+box on
+legend(legend_ls(u));
+set(gca,'FontSize',12);
 end
 function [idx12,idx21]=AlignID(ID1,ID2)
 % 2->1

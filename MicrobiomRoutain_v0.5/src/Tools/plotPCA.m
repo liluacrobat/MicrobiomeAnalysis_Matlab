@@ -13,7 +13,7 @@ if nargin<5
     flag = 1;
 end
 U=sort(unique(Y));
-% str=cell(1,length(U));
+str=cell(1,length(U));
 
 if nargin<3
     FaceColor = defaultColor(length(unique(Y)));
