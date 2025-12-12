@@ -2,16 +2,23 @@ function alphaAnalysis_w_dot(fileName,measure_alpha,measure_alpha_title,groups_y
 plotBox(measure_alpha,groups_y,header);
 ylabel(measure_alpha_title);
 a=axis;
+a(3) = max(a(3),min(measure_alpha(:))*0.8);
+
 a(4)=a(4)*1.2;
 axis(a);
+keyboard
 plotPDF(gcf,fileName);
 
 fileName_anova = strcat(fileName,'_anova');
 hg = header(groups_y);
 [p_anova, t_anova,stats_anova] = anova1(measure_alpha,hg);
-[c,m,~,nms] = multcompare(stats_anova,'CType','dunn-sidak');
-
+[c1,m,~,nms] = multcompare(stats_anova,'CriticalValueType','bonferroni'); 
+[c2,~,~,~] = multcompare(stats_anova,'CriticalValueType','tukey-kramer'); 
 alpha_pair_pval = zeros(max(groups_y));
+
+c{1} = c1;
+c{2} = c2;
+
 for i=1:max(groups_y)
     for j=1:max(groups_y)
         [~,alpha_pair_pval(i,j)] = ttest2(measure_alpha(groups_y==i),measure_alpha(groups_y==j));
@@ -40,35 +47,62 @@ for i=1:length(nms)
     fprintf(fid,'%d\t%s\t%f\t%f\t%d\n',i,nms{i},m(i,1),m(i,2),y(i));
 end
 fprintf(fid,'\n');
-fprintf(fid,'Group-A\tGroup-B\tLower 95%% of diff (Group-A - Group-B)\tMean diff (Group-A - Group-B)\tHigher 95%% of diff (Group-A - Group-B)\tp-value\n');
-[m,~] = size(c);
-anova_p = ones(length(nms));
+fprintf(fid,'Group-A\tGroup-B\tLower 95%% of diff (Group-A - Group-B)\tMean diff (Group-A - Group-B)\tHigher 95%% of diff (Group-A - Group-B)\n');
+c1 = c{1};
+c2 = c{2};
+
+[m,~] = size(c1);
+anova_p1 = ones(length(nms));
+anova_p2 = ones(length(nms));
+
 for i=1:m
-    fprintf(fid,'%s\t%s\t%f\t%f\t%f\t%f\n',nms{c(i,1)},nms{c(i,2)},c(i,3),c(i,4),c(i,5),c(i,6));
-    anova_p(c(i,1),c(i,2)) = c(i,6);
-    anova_p(c(i,2),c(i,1)) = c(i,6);
+    fprintf(fid,'%s\t%s\t%f\t%f\t%f\n',nms{c1(i,1)},nms{c1(i,2)},c1(i,3),c1(i,4),c1(i,5));
+    anova_p1(c1(i,1),c1(i,2)) = c1(i,6);
+    anova_p1(c1(i,2),c1(i,1)) = c1(i,6);
+
+    anova_p2(c2(i,1),c2(i,2)) = c2(i,6);
+    anova_p2(c2(i,2),c2(i,1)) = c2(i,6);
 end
 [hidx,~] = AlignID(header,nms);
-anova_p = anova_p(hidx,hidx);
+anova_p1 = anova_p1(hidx,hidx);
+anova_p2 = anova_p2(hidx,hidx);
+
 nms_s = nms(hidx);
 fprintf(fid,'\n');
 
-fprintf(fid,'Pairwise ANOVA p-value\n');
+fprintf(fid,'Pairwise ANOVA p-value (Bonferroni)\n');
 for i=1:length(nms)
-fprintf(fid,'\t%s',nms_s{i});
+    fprintf(fid,'\t%s',nms_s{i});
 end
 fprintf(fid,'\n');
 for i=1:length(nms)
     fprintf(fid,'%s',nms_s{i});
     for j=1:length(nms)
-        fprintf(fid,'\t%f',anova_p(i,j));
+        fprintf(fid,'\t%f',anova_p1(i,j));
     end
     fprintf(fid,'\n');
 end
 
+fprintf(fid,'\n');
+
+fprintf(fid,'Pairwise ANOVA p-value (Tukey-Kramer)\n');
+for i=1:length(nms)
+    fprintf(fid,'\t%s',nms_s{i});
+end
+fprintf(fid,'\n');
+for i=1:length(nms)
+    fprintf(fid,'%s',nms_s{i});
+    for j=1:length(nms)
+        fprintf(fid,'\t%f',anova_p2(i,j));
+    end
+    fprintf(fid,'\n');
+end
+
+fprintf(fid,'\n');
+
 fprintf(fid,'Pairwise t-test p-value\n');
 for i=1:length(nms)
-fprintf(fid,'\t%s',header{i});
+    fprintf(fid,'\t%s',header{i});
 end
 fprintf(fid,'\n');
 for i=1:length(nms)
@@ -89,23 +123,6 @@ Y = Y(xidx);
 if nargin<4
     facecolor = defaultColor(length(Name));
 end
-% facecolor = [155 188 107
-%     90 141 198
-%     191 80 199
-%     212 125 88
-%     170 81 92]/255;
-% facecolor =[ 
-%     248 118 109
-%     97 156 255
-%     211 146 0
-%     0 193 156
-%     0 186 56
-%     219 114 251
-%     147 170 0
-%     0 185 227
-%     255 97 195]/255;
-% facecolor =[ 0 186 56
-%     248 118 109]/255;
 [Y,idx] = sort(Y);
 X = X(idx);
 boxplot(X,Y,'Colors',facecolor,'Widths',wid,'Symbol','w+');
@@ -132,7 +149,7 @@ if nargin>2
     set(gca,'xticklabels',Name);
 end
 if length(Name)<=3
-    pbaspect([1 1.5 1])
+    pbaspect([1 2 1])
 else
     pbaspect([2 1 1])
 end

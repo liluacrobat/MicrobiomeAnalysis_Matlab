@@ -32,10 +32,10 @@ if ~isfield(para,'plotrow')
     para.plotrow = 0;
 end
 if ~isfield(para,'rlinkage')
-    para.rlinkage = 'average';
+    para.rlinkage = 'ward';
 end
 if ~isfield(para,'clinkage')
-    para.clinkage = 'average';
+    para.clinkage = 'ward';
 end
 if ~isfield(para,'drow')
     para.drow = 'spearman';
@@ -53,19 +53,24 @@ end
 X_vis = dataNorm(X,para.norm);
 
 if ~isfield(para,'colormap')
-    cmap = [165,0,38
-        215,48,39
-        244,109,67
-        253,174,97
-        254,224,144
-        255,255,191
-        224,243,248
-        171,217,233
-        116,173,209
-        69,117,180
-        49,54,149]/255;
-    cmap = flip(cmap);
+    % cmap = [165,0,38
+    %     215,48,39
+    %     244,109,67
+    %     253,174,97
+    %     254,224,144
+    %     255,255,191
+    %     224,243,248
+    %     171,217,233
+    %     116,173,209
+    %     69,117,180
+    %     49,54,149]/255;
+    % cmap = flip(cmap);
+    cmap = flip(cbrewer('div', 'RdYlBu',100));
+   
 end
+cmap(cmap>1)=1;
+cmap(cmap<0)=0;
+
 
 if ~isfield(para,'cluster')
     para.cluster = 'all';
@@ -91,10 +96,13 @@ else
     CGobj = [];
     col_sel = 1:size(X,2);
 end
-flag_sym = true;
+
 CGobj_vis = clustergram(X_vis(:,col_sel),'Cluster','column','Colormap',cmap,'Symmetric',flag_sym,...
     'OptimalLeafOrder',false,'RowPDist',para.drow,'ColumnPDist',para.dcol,...
     'Linkage',{para.rlinkage,para.clinkage},'DisplayRatio',[0.001 0.15]);
+
+% Pause to turn on the colorbar
+keyboard;
 
 [row_sel,~] = heatmapLabels(CGobj_vis);
 a=para.rowname(row_sel);
@@ -188,7 +196,6 @@ end
 end
 function Y = dataNorm(X,method)
 %% normalize the data so that each feature is comparable
-Y = X;
 switch method
     case '01'
         % Normalize to [0, 1]

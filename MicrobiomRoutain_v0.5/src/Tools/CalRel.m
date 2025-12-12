@@ -1,5 +1,5 @@
 function R=CalRel(X,p)
-if nargin<2
+if nargin<3
     R=X./repmat(sum(X,1),size(X,1),1);
 else
     Q=zeros(1,size(X,2));
@@ -13,5 +13,4 @@ else
     end
     R=X./repmat(Q,size(X,1),1);
 end
-R(:,sum(X,1)==0)=0;
 end

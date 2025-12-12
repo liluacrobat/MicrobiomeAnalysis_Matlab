@@ -8,6 +8,9 @@ if ~iscell(y_legend)
     end
     y_legend = tmp;
 end
+if ~isfield(para,'thr')
+    para.thr = 2;
+end
 rpath = para.rpath;
 rpath = strcat(rpath,'_CMP');
 y_cmp = y_legend(unique(y));
@@ -54,7 +57,8 @@ if isfield(para,'plot')==0
 end
 if para.plot~=0
     if ~isempty(score)
-        plotLEfSe(score,Enrich_lefse,tax_lefse, y_cmp)
+        plotSEL = abs(score)>=para.thr;
+        plotLEfSe_pair(score(plotSEL),Enrich_lefse(plotSEL),tax_lefse(plotSEL), y_cmp)
         keyboard
         plotPDF(gcf,rpath);
     end

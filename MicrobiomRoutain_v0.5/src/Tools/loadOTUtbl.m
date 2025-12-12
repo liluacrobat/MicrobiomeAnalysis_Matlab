@@ -2,6 +2,8 @@ function OTU_tbl = loadOTUtbl(tbl_name,tax_flag)
 % read OTU table and extract sample id, taxonomy, and counts
 if nargin<2
     tax_flag = 0;
+else
+    tax_flag = 1;
 end
 tbl = readtable(tbl_name,'delimiter','\t',"VariableNamingRule","preserve",'ReadVariableNames',true);
 OTU_tbl.tax = table2array(tbl(:,1));
